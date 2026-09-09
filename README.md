@@ -12,7 +12,7 @@ On the tested Thor, Wi-Fi sometimes stopped discovering or reconnecting to netwo
 
 Forgetting the configured network, restarting, then adding it again restored the connection in a real test. This app automates that sequence so you do not have to retype the password. It also offers a normal connection button when a restart is unnecessary.
 
-This is a **workaround**, not proof that every Wi-Fi failure has the same cause. Successful reconnection on Wi-Fi 6 was observed; the app does not change your router's Wi-Fi generation, channel or security mode.
+This is a **workaround**, not proof that every Wi-Fi failure has the same cause. Successful connections on Wi-Fi 6 and Wi-Fi 7 were observed; the app does not change your router's Wi-Fi generation, channel or security mode.
 
 ## Screenshots
 
@@ -60,6 +60,8 @@ Supported passwords remain 8–63 printable ASCII characters; SSIDs are 1–32 U
 
 WPA3 also requires compatible Android vendor HAL, driver and firmware; having a shell command alone does not guarantee interoperability. See [Android WPA3 requirements](https://source.android.com/docs/core/connect/wifi-wpa3-owe).
 
+Android reports [802.11be as Wi-Fi standard 8](https://developer.android.com/reference/android/net/wifi/ScanResult#WIFI_STANDARD_11BE) and [SAE as security type 4](https://developer.android.com/reference/android/net/wifi/WifiInfo#SECURITY_TYPE_SAE). These are the values observed in the successful Wi-Fi 7 test.
+
 ## Profile storage and privacy
 
 Profiles are local. The APK requests the boot-completed permission and has **no Internet permission**. It contains no personal Wi-Fi configuration, telemetry or account integration.
@@ -72,7 +74,7 @@ Share the APK or this source repository. **Do not share your profile file, priva
 
 ## Verification performed
 
-Version 2.2: all-network recovery was launched from the real app and the boot receiver reconnected the chosen profile with an IP address. The app catalog was unchanged. A separate SAE-only router profile reached WPA3 authentication but the access point rejected it; successful connection to every WPA3-only network is **not** established. Wi-Fi 7 radio operation is not claimed.
+Version 2.2: all-network recovery was launched from the real app and the boot receiver reconnected the chosen profile with an IP address. The app catalog was unchanged. A separate SAE-only profile initially received authentication rejections, then connected after its stored profile was updated. Android reported security type `4` (SAE), Wi-Fi standard `8` (802.11be / Wi-Fi 7), frequency 5975 MHz, and global IP addresses. This is one observed Wi-Fi 7 / WPA3 connection on the tested firmware, not a guarantee for every router. The full reboot-recovery test and the separate Wi-Fi 7 connection test are distinct checks.
 
 - Real-device add, select, edit and delete via UI instrumentation using a temporary fictional profile; the original list was restored.
 - Real-device normal connection, and a complete recovery cycle launched through the app, with association and IP address confirmed after boot. The boot receiver performed recovery; no PC reconnect/resume command was issued after reboot.

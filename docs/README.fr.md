@@ -10,6 +10,8 @@ Les mots de passe sont en clair dans `Téléchargements/Thor-Scripts/WIFI_RESEAU
 
 **WPA2-PSK et WPA3-SAE**, détectés automatiquement dans les scans, selon les commandes disponibles sur le firmware. Une box Wi-Fi 7 peut accepter une connexion compatible, mais l’application ne transforme pas la radio du Thor en Wi-Fi 7. Réseaux masqués, ouverts et Enterprise non pris en charge ; mots de passe de 8 à 63 caractères ASCII imprimables. La sécurité observée est conservée avant le reboot pour permettre la reprise même si le scan est vide au démarrage. Si elle est inconnue, la récupération s’arrête avant tout oubli : ouvrir les paramètres Wi-Fi pour détecter le réseau d’abord.
 
+Un essai réel a confirmé une connexion **Wi-Fi 7 (802.11be), WPA3-SAE, en 6 GHz**, avec une adresse IP, après mise à jour du profil enregistré. Cela ne garantit pas toutes les box. Le cycle complet oubli/redémarrage/reconnexion a été vérifié séparément sur le réseau habituel.
+
 **Connecté ✓** identifie le réseau réellement associé avec une adresse IP ; cela ne teste pas Internet. L’état s’actualise quand l’application est visible.
 
 Tous les scripts nécessaires sont **inclus dans l’APK** et installés au premier lancement. Service root AYN requis ; compatibilité vérifiée sur le firmware Thor précisé dans le [README anglais](../README.md). Les autres appareils et firmwares ne sont pas garantis. Aucun PC, Shizuku ou Internet n'est nécessaire après installation.
