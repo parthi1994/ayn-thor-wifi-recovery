@@ -1,6 +1,6 @@
-# Thor Wi-Fi 2.0 — sources
+# Thor Wi-Fi 2.1 — sources
 
-Application Android locale pour gérer une liste de réseaux WPA2 et reprendre automatiquement une connexion après un oubli volontaire et un redémarrage. Interface française, adaptée au paysage et au portrait. Package : `local.thor.wifiresume`.
+Application Android locale pour gérer une liste de réseaux WPA2 et reprendre automatiquement une connexion après un oubli volontaire et un redémarrage. Interface française et anglaise, adaptée au paysage et au portrait. Package : `local.thor.wifiresume`.
 
 ## Installer et utiliser
 
@@ -13,7 +13,7 @@ Compatibilité réellement vérifiée : AYN Thor, Android 13, firmware `Thor_V1.
 - **Se connecter** : connecte uniquement le réseau sélectionné, sans oubli ni reboot.
 - **Oublier, redémarrer et reconnecter** : affiche une confirmation nommant le réseau, puis oublie uniquement ce SSID, vérifie l'oubli, redémarre et reprend automatiquement. Aucun reset usine. Un déverrouillage après reboot peut être nécessaire.
 
-Le fichier texte local est volontairement en clair, selon la préférence de l'utilisateur initial. Les mots de passe sont masqués par défaut dans l'éditeur. Ni l'APK ni ces sources ne contiennent de réseau personnel. Pour partager, envoyer l'APK ou cette archive de sources, pas le fichier WIFI_RESEAUX.txt.
+Le fichier texte local est volontairement en clair, pour permettre une modification directe hors ligne. Les mots de passe sont masqués par défaut dans l'éditeur. Ni l'APK ni ces sources ne contiennent de réseau personnel. Pour partager, envoyer l'APK ou cette archive de sources, pas le fichier WIFI_RESEAUX.txt.
 
 ## Construire sous Windows
 
