@@ -30,6 +30,8 @@ public final class MainActivity extends Activity {
     private String selected="", wifi="", workflow="", connectedSsid="";
     private boolean busy=false, ready=false, catalogValid=false, foreground=false;
     private long pollUntil=0;
+    private boolean snapshotRunning=false;
+    private String lastRenderedCatalog="";
     private boolean demo=false;
     private String language="fr";
     private String tr(String text){return I18n.text(this,text);}
@@ -74,7 +76,7 @@ public final class MainActivity extends Activity {
             return snapshot();
         }, this::apply);
     }
-    @Override protected void onResume(){super.onResume();foreground=true;if(ready&&!busy&&!demo)refresh();}
+    @Override protected void onResume(){super.onResume();foreground=true;if(ready&&!busy&&!demo)refreshQuiet();}
     @Override protected void onPause(){super.onPause();foreground=false;handler.removeCallbacks(poll);}
     @Override protected void onDestroy(){super.onDestroy();handler.removeCallbacksAndMessages(null);io.shutdown();}
     private int dp(float n){return Math.round(n*getResources().getDisplayMetrics().density);}
@@ -196,15 +198,25 @@ public final class MainActivity extends Activity {
             return r;
         },r->{pollUntil=System.currentTimeMillis()+180000;status.setText(reboot?tr("Redémarrage demandé"):tr("Connexion en cours…"));detail.setText(reboot?tr("La reprise sera automatique après le démarrage."):tr("Vérification du réseau sélectionné et de son adresse IP."));handler.postDelayed(poll,3000);});
     }
-    private final Runnable poll=new Runnable(){public void run(){if(foreground&&!demo){if(!busy)refresh();else handler.postDelayed(this,3000);}}};
+    private final Runnable poll=new Runnable(){public void run(){if(foreground&&!demo){if(!busy)refreshQuiet();else handler.postDelayed(this,3000);}}};
     private void refresh(){runJob(tr("Actualisation…"),this::snapshot,this::apply);}
+    // Poll only while recovery is active. Never disable buttons or rebuild an
+    // unchanged network list merely to update the connection status.
+    private void refreshQuiet(){
+        if(busy||snapshotRunning||demo)return;
+        snapshotRunning=true;
+        io.execute(()->{try{Snapshot s=snapshot();handler.post(()->{snapshotRunning=false;if(!isDestroyed()&&!busy)apply(s);});}
+            catch(Exception e){handler.post(()->{snapshotRunning=false;if(!isDestroyed()&&!busy){status.setText(tr("Action non terminée"));detail.setText(tr("Actualise pour vérifier la connexion."));}});}});
+    }
     private static final class Snapshot{String catalog,known,wifi,status;}
     private Snapshot snapshot() throws Exception {
         String r=ThorBridge.execute("snapshot");if(!r.contains("SNAPSHOT_OK"))throw new IOException(explain(r));
         Snapshot s=new Snapshot();s.catalog=read("catalog.txt");s.known=read("known.txt");s.wifi=read("wifi.txt");s.status=read("status.txt");return s;
     }
     private void apply(Snapshot s){
-        try{List<NetworkStore.Network> incoming=NetworkStore.parse(s.catalog);networks.clear();networks.addAll(incoming);known=NetworkStore.known(s.known);wifi=s.wifi;workflow=s.status;ready=true;catalogValid=true;
+        String previousConnected=connectedSsid, previousSelected=selected;
+        boolean redraw=!s.catalog.equals(lastRenderedCatalog);
+        try{List<NetworkStore.Network> incoming=NetworkStore.parse(s.catalog);if(redraw){networks.clear();networks.addAll(incoming);}known=NetworkStore.known(s.known);wifi=s.wifi;workflow=s.status;ready=true;catalogValid=true;
             if(selection()==null)selected=networks.isEmpty()?"":networks.get(0).ssid;getPreferences(0).edit().putString("selected",selected).apply();
             connectedSsid=WifiState.connectedSsid(wifi);
             String connected=connectedSsid;
@@ -212,13 +224,20 @@ public final class MainActivity extends Activity {
             else if(workflow.contains("RECONNECTING")){status.setText(tr("Connexion en cours…"));detail.setText(tr("Vérification de l’association et de l’adresse IP."));pollUntil=System.currentTimeMillis()+180000;}
             else if(!connected.isEmpty()){status.setText(tr("Connecté à ")+connected);detail.setText(String.format(tr("Wi-Fi actif · %d réseau(x) dans ta liste"),networks.size()));pollUntil=0;}
             else{status.setText(wifi.contains("Wifi is disabled")?tr("Wi-Fi désactivé"):tr("Aucune connexion Wi-Fi"));detail.setText(workflow.contains("RECONNECT_NOT_CONFIRMED")?tr("Connexion non confirmée. Vérifie le mot de passe et la portée du réseau."):tr("Choisis un réseau ci-dessous pour te connecter."));}
+            if(workflow.contains("WORKER_INTERRUPTED")) {
+                status.setText(tr("Opération interrompue"));
+                detail.setText(tr("La tentative précédente s’est arrêtée. Tu peux relancer la connexion ou la récupération."));
+            }
             if(!selected.equals(connectedSsid) && workflow.contains("RECONNECT_NOT_CONFIRMED")) {
                 if(workflow.contains("NETWORK_NOT_VISIBLE")) detail.setText(tr("Réseau non détecté. Vérifie sa portée et relance la connexion."));
                 else if(workflow.contains("WPA3_UNSUPPORTED")||workflow.contains("SECURITY_UNSUPPORTED")) detail.setText(tr("Sécurité Wi-Fi non prise en charge par ce firmware."));
                 else detail.setText(tr("Connexion au réseau choisi non confirmée. Vérifie le mot de passe et la portée."));
             }
         }catch(IllegalArgumentException e){status.setText(tr("Fichier Wi-Fi à corriger"));detail.setText(tr(e.getMessage()));ready=true;catalogValid=false;}
-        render();handler.removeCallbacks(poll);if(foreground&&!demo)handler.postDelayed(poll,System.currentTimeMillis()<pollUntil?4000:10000);
+        if(redraw||!previousConnected.equals(connectedSsid)||!previousSelected.equals(selected)||!catalogValid)render();
+        lastRenderedCatalog=s.catalog;
+        handler.removeCallbacks(poll);
+        if(foreground&&!demo&&(workflow.contains("RECONNECTING")||workflow.contains("RESUME_PENDING=1")))handler.postDelayed(poll,4000);
     }
     private String explain(String result){
         if(result.contains("SECURITY_UNKNOWN"))return tr("Sécurité inconnue : ouvre les paramètres Wi-Fi pour détecter ce réseau, puis réessaie. Aucun réseau oublié.");

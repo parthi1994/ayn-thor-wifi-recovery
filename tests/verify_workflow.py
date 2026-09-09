@@ -13,6 +13,7 @@ with tempfile.TemporaryDirectory(prefix='workflow-test-',dir=BASE) as tmp:
     root=Path(tmp)
     for case in ['exact_match','missing_credentials','missing_companion','forget_failed','public_literal','public_invalid','selected_only','busy_snapshot','all','all_empty','all_failed','missing_security']:
         p=root/case;p.mkdir();(p/'bin').mkdir()
+        (p/'bin/workflow_guard.sh').write_text((BASE.parent/'assets/engine/workflow_guard.sh').read_text(encoding='utf8'),encoding='utf8',newline='\n')
         if case!='missing_credentials': (p/'credentials').write_text('Home\nDummyOnly123!\n',encoding='utf-8',newline='\n')
         (p/'companion-tested').touch()
         (p/'saved').write_text('Network Id SSID Security type\n0            Home                            wpa2-psk\n0            Home                            wpa3-sae^\n1            Home Guest                      wpa2-psk\n2            Other                           wpa2-psk\n',encoding='utf-8',newline='\n')

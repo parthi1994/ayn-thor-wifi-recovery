@@ -9,13 +9,16 @@ BIN="$P/bin"
 CREDS="$P/credentials"
 BOOT=$(cat /proc/sys/kernel/random/boot_id)
 OP=${1:-status}
+. "$BIN/workflow_guard.sh"
+case "$OP" in worker) ;; *) thor_clear_stale;; esac
 PUBLIC=/sdcard/Download/Thor-Scripts/WIFI_RESEAUX.txt
 case "$OP" in status|import|reload|export-config|forget|forget-selected|forget-all|resume|worker|connect|companion-test) ;; *) exit 1;; esac
 # AYN's native bridge can return its first stdout chunk before a multi-step
 # script finishes. Buffer output until exit so a closed pipe cannot interrupt it.
 exec 3>&1
 exec > "$P/operation-$OP.txt" 2>&1
-trap 'awk '\''BEGIN { ORS="; " } { print } END { printf "\n" }'\'' "$P/operation-$OP.txt" >&3' EXIT
+flush_output() { awk 'BEGIN { ORS="; " } { print } END { printf "\n" }' "$P/operation-$OP.txt" >&3; }
+trap flush_output EXIT
 run() { timeout -k 2 20 "$@"; }
 state() { printf '%s\n' "$1" > "$P/status"; printf '%s\n' "$1"; }
 export_public() {
@@ -164,17 +167,29 @@ resume)
     validate || { state RESUME_INVALID_CREDENTIALS; exit 1; }
     # Atomic rename gives one consumer even if the PC and boot receiver race.
     mv "$P/pending" "$P/working" 2>/dev/null || { echo ALREADY_CLAIMED; exit 0; }
+    touch "$P/working"
     nohup /system/bin/sh "$BIN/workflow.sh" worker </dev/null >/dev/null 2>&1 &
     echo RESUME_DISPATCHED
     exit 0;;
 worker|connect)
+    printf '%s\n' "$$" > "$P/worker.pid"
+    worker_cleanup() {
+        if [ "$(cat "$P/worker.pid" 2>/dev/null)" = "$$" ]; then
+            rm -f "$P/working" "$P/worker.pid"
+            if [ "$(cat "$P/status" 2>/dev/null)" = RECONNECTING ]; then state WORKER_INTERRUPTED; fi
+        fi
+    }
+    # Cleanup on normal/error/signal exits; SIGKILL is handled by the stale guard.
+    trap 'worker_cleanup; flush_output' EXIT
+    trap 'exit 143' TERM HUP
+    trap 'exit 130' INT
     if [ "$OP" = connect ]; then load_public || { state CONFIG_FILE_INVALID; exit 1; }; fi
     validate || { state STOP_NO_VALID_PRIVATE_CREDENTIALS; exit 1; }
     if [ "$OP" = connect ]; then printf '%s\n' "$BOOT" > "$P/working"; fi
     state RECONNECTING
-    /system/bin/sh "$BIN/wifi_reconnect.sh" > "$P/last-connect-result" 2>&1
+    budget=$((150 * rows / 2))
+    timeout -k 2 "$budget" /system/bin/sh "$BIN/wifi_reconnect.sh" > "$P/last-connect-result" 2>&1
     rc=$?
-    rm -f "$P/working"
     if [ "$rc" = 0 ]; then state CONNECTED_WITH_IP; else state "RECONNECT_NOT_CONFIRMED_RC=$rc"; fi
     exit "$rc";;
 companion-test)

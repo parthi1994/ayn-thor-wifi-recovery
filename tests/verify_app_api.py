@@ -9,6 +9,7 @@ def unix(p):
 with tempfile.TemporaryDirectory(prefix='thor-api-') as temp:
     for case in ['save_literal','save_empty','save_invalid','save_busy','connect_selected','connect_invalid']:
         base=Path(temp)/case; base.mkdir(); p=base/'private';p.mkdir();a=base/'exchange';a.mkdir(); public=base/'catalog.txt'
+        (p/'bin').mkdir();(p/'bin/workflow_guard.sh').write_text((SOURCE/'assets/engine/workflow_guard.sh').read_text(encoding='utf8'),encoding='utf8',newline='\n')
         public.write_text('SSID=Original\nMOT_DE_PASSE=Original123!\n',encoding='utf8')
         (p/'credentials').write_text('Original\nOriginal123!\n',encoding='utf8')
         secret="Literal$(never) ' # \\!"

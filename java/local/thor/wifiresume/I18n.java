@@ -90,6 +90,9 @@ KEYS.put("Connecté ✓","ui_82");
 KEYS.put("Réseau non détecté. Vérifie sa portée et relance la connexion.","ui_83");
 KEYS.put("Sécurité Wi-Fi non prise en charge par ce firmware.","ui_84");
 KEYS.put("Connexion au réseau choisi non confirmée. Vérifie le mot de passe et la portée.","ui_85");
+KEYS.put("Opération interrompue","ui_87");
+KEYS.put("La tentative précédente s’est arrêtée. Tu peux relancer la connexion ou la récupération.","ui_88");
+KEYS.put("Actualise pour vérifier la connexion.","ui_89");
 KEYS.put("ABOUT_BODY","ui_81");
 KEYS.put("Sécurité inconnue : ouvre les paramètres Wi-Fi pour détecter ce réseau, puis réessaie. Aucun réseau oublié.","ui_86");
 }

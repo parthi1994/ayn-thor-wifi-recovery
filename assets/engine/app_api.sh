@@ -9,6 +9,8 @@ P=/data/local/thor-wifi
 A=/data/user/0/local.thor.wifiresume/files/exchange
 PUBLIC=/sdcard/Download/Thor-Scripts/WIFI_RESEAUX.txt
 OP=${1:-snapshot}
+. "$P/bin/workflow_guard.sh"
+thor_clear_stale
 case "$OP" in snapshot|save|connect|forget) ;; *) exit 1;; esac
 [ -d "$A" ] && [ ! -L "$A" ] || exit 1
 OWNER=$(stat -c '%u:%g' "$A") || exit 1

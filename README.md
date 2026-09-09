@@ -4,7 +4,7 @@ A small, offline Android utility for the **AYN Thor**: keep your Wi-Fi profiles,
 
 **English and French** are available from the **FR / EN** button. The app also explains what each action does. This is an independent community utility, not an official AYN firmware fix.
 
-[Download the APK](dist/Thor-WiFi-v2.2.apk) · [French guide](docs/README.fr.md) · [Build from source](#build-from-source)
+[Download the APK](dist/Thor-WiFi-v2.3.apk) · [French guide](docs/README.fr.md) · [Build from source](#build-from-source)
 
 ## Why this exists
 
@@ -23,7 +23,7 @@ Real screenshots of the app's read-only demo mode. The network names are fiction
 
 ## Installation
 
-1. Copy [Thor-WiFi-v2.2.apk](dist/Thor-WiFi-v2.2.apk) to your Thor and install it. Allow installation from your chosen file manager if Android asks.
+1. Copy [Thor-WiFi-v2.3.apk](dist/Thor-WiFi-v2.3.apk) to your Thor and install it. Allow installation from your chosen file manager if Android asks.
 2. Open **Thor Wi-Fi** once. The app uses AYN's existing root service to install its bundled scripts. No separate script download, PC, Shizuku or network access is required after installation.
 3. Add your network name and Wi-Fi password (WPA2 or WPA3), or pick a name from **Saved in Android**. If the app does not already know that password, enter it once.
 4. Select a network and choose **Connect** or **Forget, restart and reconnect**.
@@ -42,7 +42,7 @@ Keep the app installed and avoid force-stopping it: Android must be able to deli
 | FR / EN | Chooses and remembers the interface language. |
 | Wi-Fi file and help | Explains the workaround, profile storage and limitations. |
 
-Recovery also works when the selected profile is not saved in Android yet. Android networks absent from the app catalog must be added again if you want to use them later. There is no factory reset and no continuous reboot loop. A connection attempt may wait roughly 90 seconds per profile, plus command timeouts.
+Recovery also works when the selected profile is not saved in Android yet. Android networks absent from the app catalog must be added again if you want to use them later. There is no factory reset and no continuous reboot loop. Reconnection has an outer deadline of 150 seconds per profile. If a background worker disappears, its stale marker is cleared on the next status check or action, after a 15-second launch grace period; the app then reports an interrupted operation and allows retrying. This does not automatically start another reboot.
 
 The manual launchers remain in `Downloads/Thor-Scripts` for **Thor Settings → Run script as root**. The app forgets all Android networks and reconnects one selected profile. The legacy manual script `10_WIFI_OUBLI_REBOOT_AUTO.sh` keeps its narrower behavior: it forgets only profiles listed in the file, then tries those profiles in order.
 
@@ -56,7 +56,7 @@ Supported authentication: **WPA2-PSK and WPA3-SAE**, selected automatically from
 
 Supported passwords remain 8–63 printable ASCII characters; SSIDs are 1–32 UTF-8 bytes without control characters or leading/trailing spaces. Enterprise, open/OWE, hidden networks and raw 64-character hexadecimal keys are not implemented. Wi-Fi generation and authentication mode are different: this app does not add Wi-Fi 7 radio support to the Thor. Connection to a Wi-Fi 7 router depends on its compatible bands, authentication, and the device firmware.
 
-**Connected ✓** appears on the actually connected profile and on the connection button when that profile is selected. It requires a current SSID association and a global-scope IP address on `wlan0`; it does not claim Internet access. The app refreshes the state while visible.
+**Connected ✓** appears on the actually connected profile and on the connection button when that profile is selected. It requires a current SSID association and a global-scope IP address on `wlan0`; it does not claim Internet access. Opening the app and pressing **Refresh** update the state. While a recovery or connection is active, quiet checks update status without disabling controls or rebuilding an unchanged profile list. There is no periodic refresh while idle.
 
 WPA3 also requires compatible Android vendor HAL, driver and firmware; having a shell command alone does not guarantee interoperability. See [Android WPA3 requirements](https://source.android.com/docs/core/connect/wifi-wpa3-owe).
 
@@ -73,6 +73,8 @@ The app reads the file as literal text; it never evaluates it as shell code. Its
 Share the APK or this source repository. **Do not share your profile file, private signing key, or unreviewed device logs.**
 
 ## Verification performed
+
+Version 2.3: upgrading the actual Thor cleared an orphaned recovery marker whose worker had disappeared. A new all-network recovery started through the app, rebooted the device and reconnected through the boot receiver with global IP addresses. The profile file was unchanged and both pending/working markers were gone. No PC resume command was used. An idle observation confirmed that snapshots no longer repeat automatically. Guard tests cover stale, fresh, live-worker and absent markers.
 
 Version 2.2: all-network recovery was launched from the real app and the boot receiver reconnected the chosen profile with an IP address. The app catalog was unchanged. A separate SAE-only profile initially received authentication rejections, then connected after its stored profile was updated. Android reported security type `4` (SAE), Wi-Fi standard `8` (802.11be / Wi-Fi 7), frequency 5975 MHz, and global IP addresses. This is one observed Wi-Fi 7 / WPA3 connection on the tested firmware, not a guarantee for every router. The full reboot-recovery test and the separate Wi-Fi 7 connection test are distinct checks.
 
