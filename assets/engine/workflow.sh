@@ -10,7 +10,7 @@ CREDS="$P/credentials"
 BOOT=$(cat /proc/sys/kernel/random/boot_id)
 OP=${1:-status}
 PUBLIC=/sdcard/Download/Thor-Scripts/WIFI_RESEAUX.txt
-case "$OP" in status|import|reload|export-config|forget|forget-selected|resume|worker|connect|companion-test) ;; *) exit 1;; esac
+case "$OP" in status|import|reload|export-config|forget|forget-selected|forget-all|resume|worker|connect|companion-test) ;; *) exit 1;; esac
 # AYN's native bridge can return its first stdout chunk before a multi-step
 # script finishes. Buffer output until exit so a closed pipe cannot interrupt it.
 exec 3>&1
@@ -24,7 +24,7 @@ export_public() {
         echo '# Configuration Wi-Fi locale. Mot de passe en clair, selon votre choix.'
         echo '# Pour ajouter un reseau, ajouter deux lignes SSID= et MOT_DE_PASSE=.'
         echo '# Les valeurs sont du texte litteral : ne pas ajouter de guillemets.'
-        echo '# Connexions WPA2. Les scripts lisent ce fichier sans executer son contenu.'
+        echo '# Connexions WPA2 / WPA3 automatiques. Les scripts lisent ce fichier sans executer son contenu.'
         while IFS= read -r ssid; do
             IFS= read -r secret || return 1
             printf '\nSSID=%s\nMOT_DE_PASSE=%s\n' "$ssid" "$secret"
@@ -73,6 +73,10 @@ validate() {
     done < "$CREDS"
 }
 targets() {
+    if [ "$OP" = forget-all ]; then
+        awk '/^[[:space:]]*[0-9]+[[:space:]]/ {print $1}' "$1" | sort -u
+        return
+    fi
     while IFS= read -r ssid; do
         IFS= read -r secret || return 1
         unset secret
@@ -88,15 +92,16 @@ targets() {
 }
 # Keep the reboot credential snapshot stable while an operation is pending.
 case "$OP" in
-reload|forget|forget-selected|connect)
+reload|forget|forget-selected|forget-all|connect)
     [ ! -f "$P/pending" ] && [ ! -f "$P/working" ] || { echo STOP_WORKFLOW_ALREADY_PENDING; exit 1; };;
 esac
 case "$OP" in
 status)
-    echo WORKFLOW_VERSION=3
+    echo WORKFLOW_VERSION=4
     if validate; then printf 'CONFIGURED_NETWORKS=%s\n' "$((rows / 2))"; else echo 'CONFIGURED_NETWORKS=0'; fi
     [ ! -f "$P/companion-tested" ] || echo COMPANION_ROOT_VERIFIED=1
     [ ! -f "$P/status" ] || cat "$P/status"
+    [ ! -f "$P/connection-reason" ] || cat "$P/connection-reason"
     [ ! -f "$P/pending" ] || echo 'RESUME_PENDING=1'
     [ ! -f "$P/last-boot-receiver" ] || printf 'BOOT_RECEIVER_SEEN=%s\n' "$(cat "$P/last-boot-receiver")"
     exit 0;;
@@ -116,22 +121,23 @@ import)
     export_public || { state PUBLIC_EXPORT_FAILED; exit 1; }
     state "IMPORT_OK_NETWORKS=$((rows / 2))"
     exit 0;;
-forget|forget-selected)
-    [ "$OP" = forget-selected ] || load_public || { state CONFIG_FILE_INVALID_NO_REBOOT; exit 1; }
+forget|forget-selected|forget-all)
+    [ "$OP" != forget ] || load_public || { state CONFIG_FILE_INVALID_NO_REBOOT; exit 1; }
     validate || { state STOP_NO_VALID_PRIVATE_CREDENTIALS; exit 1; }
     [ ! -f "$P/pending" ] && [ ! -f "$P/working" ] || { echo 'STOP_WORKFLOW_ALREADY_PENDING'; exit 1; }
     run pm path local.thor.wifiresume >/dev/null 2>&1 || { state STOP_RESUME_APP_MISSING; exit 1; }
     [ -f "$P/companion-tested" ] || { state STOP_RESUME_APP_UNVERIFIED; exit 1; }
+    run /system/bin/sh "$BIN/wifi_reconnect.sh" --remember-security >/dev/null 2>&1 || { state SECURITY_UNKNOWN_NO_REBOOT; exit 1; }
     run cmd wifi help > "$P/help" 2>&1
     grep -q '^  forget-network <networkId>' "$P/help" && grep -q '^  connect-network <ssid> .*wpa2' "$P/help" || { state STOP_UNSUPPORTED_FIRMWARE; exit 1; }
     run cmd wifi list-networks > "$P/networks-before" 2>/dev/null || { state STOP_LIST_FAILED; exit 1; }
     targets "$P/networks-before" > "$P/target-ids"
-    [ -s "$P/target-ids" ] || { state STOP_NO_MATCHING_SAVED_NETWORK; exit 1; }
+    [ "$OP" = forget-all ] || [ -s "$P/target-ids" ] || { state STOP_NO_MATCHING_SAVED_NETWORK; exit 1; }
     # Entire target plan is resolved before changing any saved network.
     while IFS= read -r netid; do
         case "$netid" in ''|*[!0-9]*) state STOP_INVALID_NETWORK_ID; exit 1;; esac
     done < "$P/target-ids"
-    state FORGETTING_CONFIGURED_NETWORKS
+    if [ "$OP" = forget-all ]; then state FORGETTING_ALL_SAVED_NETWORKS; else state FORGETTING_CONFIGURED_NETWORKS; fi
     while IFS= read -r netid; do
         run cmd wifi list-networks > "$P/networks-current" 2>/dev/null || { state LIST_FAILED_NO_REBOOT; exit 1; }
         targets "$P/networks-current" > "$P/current-target-ids"

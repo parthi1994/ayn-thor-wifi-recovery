@@ -18,6 +18,7 @@ if [ "$OP" = snapshot ]; then
     cp "$PUBLIC" "$A/catalog.txt" || { echo CATALOG_READ_FAILED; exit 1; }
     run cmd wifi list-networks > "$A/known.txt" 2>/dev/null || :
     run cmd wifi status > "$A/wifi.txt" 2>/dev/null || :
+    run ip -o address show dev wlan0 scope global >> "$A/wifi.txt" 2>/dev/null || :
     /system/bin/sh "$P/bin/workflow.sh" status > "$A/status.txt" 2>/dev/null
     for file in catalog.txt known.txt wifi.txt status.txt; do deliver "$file" || exit 1; done
     echo SNAPSHOT_OK
@@ -75,6 +76,6 @@ if [ "$OP" = connect ]; then
     nohup /system/bin/sh "$P/bin/workflow.sh" worker </dev/null >/dev/null 2>&1 &
     echo CONNECT_STARTED
 else
-    # Selection deliberately bypasses the public catalog: only this SSID is forgotten.
-    /system/bin/sh "$P/bin/workflow.sh" forget-selected
+    # Keep the selected reconnect profile; forget all Android saved networks.
+    /system/bin/sh "$P/bin/workflow.sh" forget-all
 fi

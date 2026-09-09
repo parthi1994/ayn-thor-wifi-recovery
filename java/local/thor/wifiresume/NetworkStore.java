@@ -29,7 +29,7 @@ public final class NetworkStore {
         return result;
     }
     public static String format(List<Network> networks) {
-        StringBuilder s=new StringBuilder("# Thor Wi-Fi : identifiants en clair, selon votre choix.\n# Deux lignes par réseau ; WPA2 ; ne pas ajouter de guillemets.\n");
+        StringBuilder s=new StringBuilder("# Thor Wi-Fi : identifiants en clair, selon votre choix.\n# Deux lignes par réseau ; WPA2 / WPA3 auto ; ne pas ajouter de guillemets.\n");
         Set<String> seen=new HashSet<>();
         for(Network n:networks) {
             validate(n.ssid,n.password);

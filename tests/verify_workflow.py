@@ -11,11 +11,13 @@ def unix(p):
 source=(BASE.parent/'assets/engine/workflow.sh').read_text(encoding='utf-8')
 with tempfile.TemporaryDirectory(prefix='workflow-test-',dir=BASE) as tmp:
     root=Path(tmp)
-    for case in ['exact_match','missing_credentials','missing_companion','forget_failed','public_literal','public_invalid','selected_only','busy_snapshot']:
+    for case in ['exact_match','missing_credentials','missing_companion','forget_failed','public_literal','public_invalid','selected_only','busy_snapshot','all','all_empty','all_failed','missing_security']:
         p=root/case;p.mkdir();(p/'bin').mkdir()
         if case!='missing_credentials': (p/'credentials').write_text('Home\nDummyOnly123!\n',encoding='utf-8',newline='\n')
         (p/'companion-tested').touch()
         (p/'saved').write_text('Network Id SSID Security type\n0            Home                            wpa2-psk\n0            Home                            wpa3-sae^\n1            Home Guest                      wpa2-psk\n2            Other                           wpa2-psk\n',encoding='utf-8',newline='\n')
+        if case=='all_empty': (p/'saved').write_text('Network Id SSID Security type\n')
+        if case.startswith('all'): (p/'public.txt').write_text('SSID=Other\nMOT_DE_PASSE=OtherOnly123!\n')
         script=source.replace('/data/local/thor-wifi',unix(p))
         script=script.replace('/sdcard/Download/Thor-Scripts/WIFI_RESEAUX.txt',unix(p/'public.txt'))
         if case=='public_literal':
@@ -30,7 +32,7 @@ with tempfile.TemporaryDirectory(prefix='workflow-test-',dir=BASE) as tmp:
 id(){ echo 0; }
 stat(){ if [ -d "${@: -1}" ]; then echo 0:0:700; else echo 0:0:600; fi; }
 cat(){ if [ "$1" = /proc/sys/kernel/random/boot_id ]; then echo TEST_BOOT; else command cat "$@"; fi; }
-timeout(){ shift 3; "$@"; }
+timeout(){ shift 3; if [ "$1" = /system/bin/sh ]; then [ "$CASE" != missing_security ]; else "$@"; fi; }
 pm(){ [ "$CASE" != missing_companion ]; }
 sleep(){ :; }
 sync(){ :; }
@@ -40,7 +42,7 @@ cmd(){
  help) printf '  forget-network <networkId>\n  connect-network <ssid> open|wpa2\n'; return 255;;
  list-networks) command cat "$TEST_DIR/saved";;
  forget-network)
-   [ "$CASE" != forget_failed ] || return 1
+   [ "$CASE" != forget_failed ] && [ "$CASE" != all_failed ] || return 1
    echo "$3" >> "$TEST_DIR/deleted"
    awk -v id="$3" '$1 != id' "$TEST_DIR/saved" > "$TEST_DIR/saved.tmp"
    mv "$TEST_DIR/saved.tmp" "$TEST_DIR/saved";;
@@ -48,6 +50,7 @@ cmd(){
 }
 set -- forget
 [ "$CASE" != selected_only ] || set -- forget-selected
+case "$CASE" in all*) set -- forget-all;; esac
 . "$TEST_DIR/workflow.sh"
 '''
         (p/'harness.sh').write_text(harness,encoding='utf-8',newline='\n')
@@ -60,6 +63,13 @@ set -- forget
             if case=='public_literal':
                 assert 'literal $(touch SHOULD_NOT_EXIST) # !' in (p/'credentials').read_text()
                 assert not (p/'SHOULD_NOT_EXIST').exists()
+        elif case in ['all','all_empty']:
+            assert result.returncode==0,(case,result.stdout,result.stderr)
+            assert (p/'reboot-called').exists() and (p/'pending').exists()
+            assert (p/'saved').read_text().splitlines()==['Network Id SSID Security type']
+            assert (p/'credentials').read_text()=='Home\nDummyOnly123!\n'
+            assert 'SSID=Other' in (p/'public.txt').read_text()
+            if case=='all': assert (p/'deleted').read_text().split()==['0','1','2']
         else:
             assert result.returncode!=0,(case,result.stdout,result.stderr)
             assert not (p/'reboot-called').exists()

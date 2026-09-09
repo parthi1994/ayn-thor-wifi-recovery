@@ -4,7 +4,7 @@ A small, offline Android utility for the **AYN Thor**: keep your Wi-Fi profiles,
 
 **English and French** are available from the **FR / EN** button. The app also explains what each action does. This is an independent community utility, not an official AYN firmware fix.
 
-[Download the APK](dist/Thor-WiFi-v2.1.apk) · [French guide](docs/README.fr.md) · [Build from source](#build-from-source)
+[Download the APK](dist/Thor-WiFi-v2.2.apk) · [French guide](docs/README.fr.md) · [Build from source](#build-from-source)
 
 ## Why this exists
 
@@ -23,9 +23,9 @@ Real screenshots of the app's read-only demo mode. The network names are fiction
 
 ## Installation
 
-1. Copy [Thor-WiFi-v2.1.apk](dist/Thor-WiFi-v2.1.apk) to your Thor and install it. Allow installation from your chosen file manager if Android asks.
+1. Copy [Thor-WiFi-v2.2.apk](dist/Thor-WiFi-v2.2.apk) to your Thor and install it. Allow installation from your chosen file manager if Android asks.
 2. Open **Thor Wi-Fi** once. The app uses AYN's existing root service to install its bundled scripts. No separate script download, PC, Shizuku or network access is required after installation.
-3. Add your network name and WPA2 password, or pick a name from **Saved in Android**. If the app does not already know that password, enter it once.
+3. Add your network name and Wi-Fi password (WPA2 or WPA3), or pick a name from **Saved in Android**. If the app does not already know that password, enter it once.
 4. Select a network and choose **Connect** or **Forget, restart and reconnect**.
 
 Keep the app installed and avoid force-stopping it: Android must be able to deliver its boot event. Unlock the Thor after restarting if prompted. If you have force-stopped the app, open it again before starting another recovery cycle.
@@ -37,14 +37,14 @@ Keep the app installed and avoid force-stopping it: Android must be able to deli
 | Add / Edit / Delete | Manages the app's list and its local text file. Deleting here keeps the network saved in Android. |
 | Saved in Android | Picks an existing Android SSID; it does not extract Android's stored passwords. |
 | Connect | Connects the selected network, without forgetting or restarting. |
-| Forget, restart and reconnect | Confirms the selected SSID, forgets only matching Android entries, verifies removal, restarts, then reconnects after boot. Other Android networks are kept. |
+| Forget, restart and reconnect | After confirmation, forgets **all networks saved in Android**, verifies removal, restarts, then reconnects the selected profile. The app catalog and its passwords are kept. |
 | Refresh | Reloads the local profile file and current Wi-Fi state. |
 | FR / EN | Chooses and remembers the interface language. |
 | Wi-Fi file and help | Explains the workaround, profile storage and limitations. |
 
-If the selected network is not saved in Android, recovery stops before restarting. Use **Connect** first. There is no factory reset and no continuous reboot loop. A connection attempt may wait roughly 90 seconds per profile, plus command timeouts.
+Recovery also works when the selected profile is not saved in Android yet. Android networks absent from the app catalog must be added again if you want to use them later. There is no factory reset and no continuous reboot loop. A connection attempt may wait roughly 90 seconds per profile, plus command timeouts.
 
-The manual launchers remain in `Downloads/Thor-Scripts` for **Thor Settings → Run script as root**. The app's recovery button targets one selected network; manual script `10_WIFI_OUBLI_REBOOT_AUTO.sh` targets all profiles listed in the file.
+The manual launchers remain in `Downloads/Thor-Scripts` for **Thor Settings → Run script as root**. The app forgets all Android networks and reconnects one selected profile. The legacy manual script `10_WIFI_OUBLI_REBOOT_AUTO.sh` keeps its narrower behavior: it forgets only profiles listed in the file, then tries those profiles in order.
 
 ## Compatibility and limitations
 
@@ -52,7 +52,13 @@ Tested on **AYN Thor, Android 13**, firmware `Thor_V1.0.0.377_20260206_165408_us
 
 The app relies on AYN's `PServerBinder` root interface, the same interface used by **Run script as root**. Availability can vary with firmware. It does not install root, change SELinux mode, unlock the bootloader, or work as a universal Android Wi-Fi repair tool.
 
-Supported profile format: **WPA2-PSK**, passwords of 8–63 printable ASCII characters, SSIDs of 1–32 UTF-8 bytes without control characters or leading/trailing spaces. WPA3-only, Enterprise, hidden networks and raw 64-character hexadecimal keys are not implemented. A router marketed as Wi-Fi 6/7 can still offer WPA2; Wi-Fi generation and authentication mode are different settings.
+Supported authentication: **WPA2-PSK and WPA3-SAE**, selected automatically from scan results and the commands advertised by `cmd wifi help`. Mixed PSK/SAE networks receive a WPA2 connection request; Android may upgrade it to SAE. SAE-only networks receive a WPA3 request. No WPA3 command is sent if the firmware does not advertise it. The detected security is retained locally before recovery, so an empty scan immediately after reboot does not erase that knowledge. Cached scans describe authentication only; a live association and IP address are still required for success. If security has never been observed, recovery stops before forgetting anything. Open Android Wi-Fi settings to discover the network first.
+
+Supported passwords remain 8–63 printable ASCII characters; SSIDs are 1–32 UTF-8 bytes without control characters or leading/trailing spaces. Enterprise, open/OWE, hidden networks and raw 64-character hexadecimal keys are not implemented. Wi-Fi generation and authentication mode are different: this app does not add Wi-Fi 7 radio support to the Thor. Connection to a Wi-Fi 7 router depends on its compatible bands, authentication, and the device firmware.
+
+**Connected ✓** appears on the actually connected profile and on the connection button when that profile is selected. It requires a current SSID association and a global-scope IP address on `wlan0`; it does not claim Internet access. The app refreshes the state while visible.
+
+WPA3 also requires compatible Android vendor HAL, driver and firmware; having a shell command alone does not guarantee interoperability. See [Android WPA3 requirements](https://source.android.com/docs/core/connect/wifi-wpa3-owe).
 
 ## Profile storage and privacy
 
@@ -66,11 +72,13 @@ Share the APK or this source repository. **Do not share your profile file, priva
 
 ## Verification performed
 
+Version 2.2: all-network recovery was launched from the real app and the boot receiver reconnected the chosen profile with an IP address. The app catalog was unchanged. A separate SAE-only router profile reached WPA3 authentication but the access point rejected it; successful connection to every WPA3-only network is **not** established. Wi-Fi 7 radio operation is not claimed.
+
 - Real-device add, select, edit and delete via UI instrumentation using a temporary fictional profile; the original list was restored.
 - Real-device normal connection, and a complete recovery cycle launched through the app, with association and IP address confirmed after boot. The boot receiver performed recovery; no PC reconnect/resume command was issued after reboot.
 - The USB cable remained attached for observation. A physically disconnected cable test was not performed.
 - French/English resource parity, language switching and help checked on the Thor. Screenshots use demo mode, which skips root setup, profile loading and mutations.
-- Isolated tests cover literal passwords, malformed profiles, empty catalogs, exact SSID targeting, preservation of other networks, failure before reboot, and the stability of pending recovery credentials.
+- Isolated tests cover literal passwords, malformed profiles, empty catalogs, exact SSID matching, WPA2/WPA3 selection, cached security across an empty reboot scan, all-network recovery, preservation of the catalog, legacy scoped recovery, failure before reboot, and the stability of pending recovery credentials.
 - APK signing verified; local backup and installed APK hashes compared.
 
 These checks establish the observed connection and IP result, not Internet reachability, every game/device interaction, or a permanent firmware fix.
@@ -100,7 +108,7 @@ python tests/verify_workflow.py
 python tests/verify_scripts.py
 ```
 
-`tests/NetworkStoreTest.java` runs the Android-independent profile parser tests. `tests/UiTestRunner.java` is a separate Android instrumentation test, excluded from the distributed APK. It uses temporary dummy profiles, not real passwords.
+`tests/NetworkStoreTest.java` runs the Android-independent profile parser tests; `tests/WifiStateTest.java` checks live connection labels, including association without an IP and stale addresses. `tests/UiTestRunner.java` is a separate Android instrumentation test, excluded from the distributed APK. It uses temporary dummy profiles, not real passwords.
 
 ### Layout
 

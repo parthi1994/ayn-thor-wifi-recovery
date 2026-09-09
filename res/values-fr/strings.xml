@@ -18,13 +18,13 @@
 <string name="ui_16" formatted="false">"Compris"</string>
 <string name="ui_17" formatted="false">"Ajoute ton premier réseau, ou choisis un réseau connu d’Android."</string>
 <string name="ui_18" formatted="false">"Sélectionner "</string>
-<string name="ui_19" formatted="false">"Réseau sélectionné · WPA2"</string>
-<string name="ui_20" formatted="false">"WPA2 · mot de passe enregistré"</string>
+<string name="ui_19" formatted="false">"Sélectionné · WPA2 / WPA3 auto"</string>
+<string name="ui_20" formatted="false">"WPA2 / WPA3 auto · mot de passe enregistré"</string>
 <string name="ui_21" formatted="false">"Modifier"</string>
 <string name="ui_22" formatted="false">"Pour : "</string>
 <string name="ui_23" formatted="false">"Nom du réseau (SSID)"</string>
 <string name="ui_24" formatted="false">"Nom exact du réseau"</string>
-<string name="ui_25" formatted="false">"Mot de passe WPA2"</string>
+<string name="ui_25" formatted="false">"Mot de passe Wi-Fi (WPA2 / WPA3)"</string>
 <string name="ui_26" formatted="false">"8 à 63 caractères"</string>
 <string name="ui_27" formatted="false">"Afficher le mot de passe"</string>
 <string name="ui_28" formatted="false">"Ajouter un réseau"</string>
@@ -41,7 +41,7 @@
 <string name="ui_39" formatted="false">"Réseaux enregistrés dans Android"</string>
 <string name="ui_40" formatted="false">"Fermer"</string>
 <string name="ui_41" formatted="false">"Redémarrer pour ce réseau ?"</string>
-<string name="ui_42" formatted="false">"Le Thor va oublier uniquement « "</string>
+<string name="ui_42" formatted="false">"Le Thor va oublier TOUS les réseaux enregistrés dans Android, redémarrer, puis se connecter à « "</string>
 <string name="ui_43" formatted="false">"Oublier et redémarrer"</string>
 <string name="ui_44" formatted="false">"Préparation du redémarrage…"</string>
 <string name="ui_45" formatted="false">"Connexion à "</string>
@@ -73,12 +73,17 @@
 <string name="ui_71" formatted="false">"Réseaux fictifs · Aucune modification du Wi-Fi"</string>
 <string name="ui_72" formatted="false">"Sans PC · Déverrouille le Thor après reboot si demandé."</string>
 <string name="ui_73" formatted="false">"SSID : 1 à 32 octets, sans espace au début ou à la fin ni caractère de contrôle."</string>
-<string name="ui_74" formatted="false">"Mot de passe WPA2 : 8 à 63 caractères ASCII imprimables."</string>
+<string name="ui_74" formatted="false">"Mot de passe Wi-Fi : 8 à 63 caractères ASCII imprimables."</string>
 <string name="ui_75" formatted="false">"Un SSID apparaît plusieurs fois dans le fichier."</string>
 <string name="ui_76" formatted="false">"Format attendu : SSID= puis MOT_DE_PASSE=, sans guillemets ajoutés."</string>
 <string name="ui_77" formatted="false">"Il manque le mot de passe d\'un réseau."</string>
 <string name="ui_78" formatted="false">"Ce SSID existe déjà."</string>
 <string name="ui_79" formatted="false">"Sans PC · La reprise se fait après le redémarrage.\nSi demandé, déverrouille le Thor."</string>
-<string name="ui_80" formatted="false">" », redémarrer, puis s’y reconnecter avec le mot de passe enregistré.\n\nLes autres réseaux Android sont conservés. Déverrouille l’écran après le reboot si demandé."</string>
-<string name="ui_81" formatted="false">"Quand le Wi-Fi du Thor ne retrouve plus les réseaux ou ne se reconnecte plus, cette application automatise un contournement : oublier le réseau choisi, redémarrer, puis se reconnecter sans retaper le mot de passe. Ce n’est pas un correctif du firmware.\n\nConnecter : sans oubli ni reboot. Réparer : uniquement le réseau sélectionné, après confirmation. Ajouter / Modifier / Supprimer : gère la liste de l’application ; supprimer ici conserve le réseau Android.\n\nLa liste est synchronisée avec Téléchargements / Thor-Scripts / WIFI_RESEAUX.txt. Ce fichier contient les mots de passe en clair. Les mots de passe restent masqués dans l’éditeur sauf si tu choisis de les afficher.\n\nWPA2 uniquement. Pour un réseau connu seulement d’Android, saisis son mot de passe une fois. Garde l’application installée et ne force pas son arrêt pour conserver la reprise au boot. Déverrouille après reboot si demandé.\n\nVersion 2.1 · Service root AYN requis. Aucun PC, Shizuku ou Internet requis après installation. L’anglais et le français se choisissent avec FR / EN."</string>
+<string name="ui_80" formatted="false">" » avec son mot de passe enregistré.\n\nLa liste de l’application et son fichier Wi-Fi sont conservés. Les réseaux absents de cette liste devront être ajoutés à nouveau. Déverrouille après le redémarrage si demandé."</string>
+<string name="ui_81" formatted="false">"Automatise le contournement oublier → redémarrer → reconnecter lorsque le Wi-Fi du Thor se bloque. Ce n’est pas une correction du firmware.\n\nSe connecter conserve les réseaux Android. La récupération oublie TOUS les réseaux Android après confirmation, puis reconnecte celui choisi. La liste de l’application et ses mots de passe sont conservés. « Connecté ✓ » indique une association et une adresse IP, sans tester Internet.\n\nWPA2-PSK et WPA3-SAE : détection automatique dans les scans. Wi-Fi 7 désigne une génération radio : l’application ne transforme pas le Thor en appareil Wi-Fi 7. Une box Wi-Fi 7 peut accepter le Thor dans un mode compatible. Réseaux masqués, Enterprise et ouverts non pris en charge. Mots de passe : 8 à 63 caractères ASCII imprimables.\n\nLa liste se synchronise avec Téléchargements / Thor-Scripts / WIFI_RESEAUX.txt. Ce fichier contient les mots de passe en clair. Modifier / Supprimer gère cette liste, sans oublier le réseau Android.\n\nVersion 2.2 · Service root AYN requis. Tous les scripts sont inclus dans l’APK. Aucun PC, Shizuku ou accès Internet requis après installation. Garder l’application installée, ne pas forcer son arrêt et déverrouiller après redémarrage si demandé. FR / EN change la langue."</string>
+<string name="ui_82" formatted="false">"Connecté ✓"</string>
+<string name="ui_83" formatted="false">"Réseau non détecté. Vérifie sa portée et relance la connexion."</string>
+<string name="ui_84" formatted="false">"Sécurité Wi-Fi non prise en charge par ce firmware."</string>
+<string name="ui_85" formatted="false">"Connexion au réseau choisi non confirmée. Vérifie le mot de passe et la portée."</string>
+<string name="ui_86" formatted="false">"Sécurité inconnue : ouvre les paramètres Wi-Fi pour détecter ce réseau, puis réessaie. Aucun réseau oublié."</string>
 </resources>

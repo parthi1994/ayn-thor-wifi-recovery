@@ -23,7 +23,7 @@ COUNT=0
 while IFS= read -r SSID; do
     IFS= read -r PASSWORD || { echo 'Incomplete credential pair.'; exit 1; }
     [ "${#SSID}" -ge 1 ] && [ "${#SSID}" -le 32 ] || { echo 'Invalid SSID length.'; exit 1; }
-    [ "${#PASSWORD}" -ge 8 ] && [ "${#PASSWORD}" -le 63 ] || { echo 'Expected WPA2 passphrases of 8-63 characters.'; exit 1; }
+    [ "${#PASSWORD}" -ge 8 ] && [ "${#PASSWORD}" -le 63 ] || { echo 'Expected Wi-Fi passphrases of 8-63 characters.'; exit 1; }
     COUNT=$((COUNT + 1))
 done < "$STAGE"
 unset SSID PASSWORD

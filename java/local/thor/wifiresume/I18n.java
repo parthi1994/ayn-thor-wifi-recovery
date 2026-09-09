@@ -86,7 +86,12 @@ KEYS.put("Il manque le mot de passe d'un réseau.","ui_77");
 KEYS.put("Ce SSID existe déjà.","ui_78");
 KEYS.put("Sans PC · La reprise se fait après le redémarrage.\nSi demandé, déverrouille le Thor.","ui_79");
 KEYS.put(" », redémarrer, puis s’y reconnecter avec le mot de passe enregistré.\n\nLes autres réseaux Android sont conservés. Déverrouille l’écran après le reboot si demandé.","ui_80");
+KEYS.put("Connecté ✓","ui_82");
+KEYS.put("Réseau non détecté. Vérifie sa portée et relance la connexion.","ui_83");
+KEYS.put("Sécurité Wi-Fi non prise en charge par ce firmware.","ui_84");
+KEYS.put("Connexion au réseau choisi non confirmée. Vérifie le mot de passe et la portée.","ui_85");
 KEYS.put("ABOUT_BODY","ui_81");
+KEYS.put("Sécurité inconnue : ouvre les paramètres Wi-Fi pour détecter ce réseau, puis réessaie. Aucun réseau oublié.","ui_86");
 }
 public static String text(Context c,String input){String key=KEYS.get(input);if(key==null)return input;int id=c.getResources().getIdentifier(key,"string",c.getPackageName());return id==0?input:c.getString(id);}
 }

@@ -18,13 +18,13 @@
 <string name="ui_16" formatted="false">"Got it"</string>
 <string name="ui_17" formatted="false">"Add your first network, or pick one saved in Android."</string>
 <string name="ui_18" formatted="false">"Select "</string>
-<string name="ui_19" formatted="false">"Selected network · WPA2"</string>
-<string name="ui_20" formatted="false">"WPA2 · password stored"</string>
+<string name="ui_19" formatted="false">"Selected · WPA2 / WPA3 auto"</string>
+<string name="ui_20" formatted="false">"WPA2 / WPA3 auto · password stored"</string>
 <string name="ui_21" formatted="false">"Edit"</string>
 <string name="ui_22" formatted="false">"For: "</string>
 <string name="ui_23" formatted="false">"Network name (SSID)"</string>
 <string name="ui_24" formatted="false">"Exact network name"</string>
-<string name="ui_25" formatted="false">"WPA2 password"</string>
+<string name="ui_25" formatted="false">"Wi-Fi password (WPA2 / WPA3)"</string>
 <string name="ui_26" formatted="false">"8 to 63 characters"</string>
 <string name="ui_27" formatted="false">"Show password"</string>
 <string name="ui_28" formatted="false">"Add a network"</string>
@@ -41,7 +41,7 @@
 <string name="ui_39" formatted="false">"Networks saved in Android"</string>
 <string name="ui_40" formatted="false">"Close"</string>
 <string name="ui_41" formatted="false">"Restart for this network?"</string>
-<string name="ui_42" formatted="false">"The Thor will forget only “"</string>
+<string name="ui_42" formatted="false">"The Thor will forget ALL networks saved in Android, restart, then connect to “"</string>
 <string name="ui_43" formatted="false">"Forget and restart"</string>
 <string name="ui_44" formatted="false">"Preparing restart…"</string>
 <string name="ui_45" formatted="false">"Connecting to "</string>
@@ -73,12 +73,17 @@
 <string name="ui_71" formatted="false">"Sample networks · No Wi-Fi changes"</string>
 <string name="ui_72" formatted="false">"No PC needed · Unlock the Thor after restart if prompted."</string>
 <string name="ui_73" formatted="false">"SSID: 1–32 UTF-8 bytes, with no leading/trailing spaces or control characters."</string>
-<string name="ui_74" formatted="false">"WPA2 password: 8–63 printable ASCII characters."</string>
+<string name="ui_74" formatted="false">"Wi-Fi password: 8–63 printable ASCII characters."</string>
 <string name="ui_75" formatted="false">"A network name appears more than once in the file."</string>
 <string name="ui_76" formatted="false">"Expected format: SSID= followed by MOT_DE_PASSE=, without added quotes."</string>
 <string name="ui_77" formatted="false">"A network password is missing."</string>
 <string name="ui_78" formatted="false">"This network name already exists."</string>
 <string name="ui_79" formatted="false">"No PC needed · Connection resumes after restart.\nUnlock the Thor if prompted."</string>
-<string name="ui_80" formatted="false">"”, restart, then reconnect using the stored password.\n\nOther Android networks are kept. Unlock the screen after restart if prompted."</string>
-<string name="ui_81" formatted="false">"When the Thor stops finding Wi-Fi networks or reconnecting, this app automates a workaround: forget the selected network, restart, then reconnect without retyping the password. It is not a firmware fix.\n\nConnect: no forgetting or restart. Recovery: the selected network only, after confirmation. Add / Edit / Delete: manages the app list; deleting here keeps the Android network.\n\nThe list syncs with Downloads / Thor-Scripts / WIFI_RESEAUX.txt. This file stores passwords in plain text. Passwords stay masked in the editor unless you choose to reveal them.\n\nWPA2 only. For a network saved only in Android, enter its password once. Keep the app installed and do not force-stop it so it can resume after boot. Unlock after restart if prompted.\n\nVersion 2.1 · AYN root service required. No PC, Shizuku or Internet required after installation. Choose English or French using FR / EN."</string>
+<string name="ui_80" formatted="false">"” using its stored password.\n\nThe app list and Wi-Fi file are kept. Networks missing from that list will need to be added again. Unlock after restart if prompted."</string>
+<string name="ui_81" formatted="false">"Automates forget → restart → reconnect when Thor Wi-Fi gets stuck. This is a firmware workaround.\n\nConnect keeps Android networks. Recovery forgets ALL Android networks after confirmation, then reconnects the selected profile. The app list and passwords are kept. “Connected ✓” means association and an IP address; Internet access is not tested.\n\nWPA2-PSK and WPA3-SAE are detected automatically from scans. Wi-Fi 7 is a radio generation: this app cannot turn the Thor into a Wi-Fi 7 device. A Wi-Fi 7 router may accept it in a compatible mode. Hidden, Enterprise and open networks are unsupported. Passwords: 8–63 printable ASCII characters.\n\nThe list syncs with Downloads / Thor-Scripts / WIFI_RESEAUX.txt. That file stores passwords in plain text. Edit / Delete manages this list without forgetting Android networks.\n\nVersion 2.2 · AYN root service required. All scripts are bundled in the APK. No PC, Shizuku or Internet required after installation. Keep the app installed, avoid force-stop, and unlock after restart if prompted. FR / EN changes the language."</string>
+<string name="ui_82" formatted="false">"Connected ✓"</string>
+<string name="ui_83" formatted="false">"Network not detected. Check its range and try connecting again."</string>
+<string name="ui_84" formatted="false">"Wi-Fi security is not supported by this firmware."</string>
+<string name="ui_85" formatted="false">"Connection to the selected network was not confirmed. Check the password and range."</string>
+<string name="ui_86" formatted="false">"Unknown security: open Wi-Fi settings to detect this network, then try again. No network was forgotten."</string>
 </resources>

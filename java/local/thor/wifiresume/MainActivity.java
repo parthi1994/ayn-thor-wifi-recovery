@@ -27,7 +27,7 @@ public final class MainActivity extends Activity {
     private Button connect, repair, add, androidKnown, refresh;
     private ProgressBar progress;
     private File exchange;
-    private String selected="", wifi="", workflow="";
+    private String selected="", wifi="", workflow="", connectedSsid="";
     private boolean busy=false, ready=false, catalogValid=false, foreground=false;
     private long pollUntil=0;
     private boolean demo=false;
@@ -65,7 +65,7 @@ public final class MainActivity extends Activity {
         build();
         if(demo){
             networks.add(new NetworkStore.Network("Home Wi-Fi","SampleOnly123"));networks.add(new NetworkStore.Network("Travel hotspot","SampleOnly456"));selected="Home Wi-Fi";
-            ready=true;catalogValid=true;status.setText(tr("Aperçu de démonstration"));detail.setText(tr("Réseaux fictifs · Aucune modification du Wi-Fi"));render();return;
+            connectedSsid="Home Wi-Fi";ready=true;catalogValid=true;status.setText(tr("Aperçu de démonstration"));detail.setText(tr("Réseaux fictifs · Aucune modification du Wi-Fi"));render();return;
         }
         runJob(tr("Préparation sur ce Thor…"), () -> {
             copyAssets("",new File(getFilesDir(),"bootstrap"));
@@ -141,12 +141,13 @@ public final class MainActivity extends Activity {
             View.OnClickListener select=v->{if(!busy){selected=n.ssid;getPreferences(0).edit().putString("selected",selected).apply();render();}};
             radio.setOnClickListener(select);top.addView(radio,new LinearLayout.LayoutParams(dp(42),dp(42)));
             TextView name=label(n.ssid,18,INK);name.setTypeface(Typeface.create("sans-serif-medium",0));top.addView(name,new LinearLayout.LayoutParams(0,-2,1));top.setOnClickListener(select);card.addView(top);
-            LinearLayout lower=row();TextView hint=label(active?tr("Réseau sélectionné · WPA2"):tr("WPA2 · mot de passe enregistré"),11,MUTED);lower.addView(hint,new LinearLayout.LayoutParams(0,-2,1));
+            LinearLayout lower=row();TextView hint=label(n.ssid.equals(connectedSsid)?tr("Connecté ✓"):(active?tr("Réseau sélectionné · WPA2"):tr("WPA2 · mot de passe enregistré")),11,n.ssid.equals(connectedSsid)?0xff9be5bd:MUTED);lower.addView(hint,new LinearLayout.LayoutParams(0,-2,1));
             Button edit=button(tr("Modifier"),false);edit.setEnabled(!busy&&!demo);edit.setOnClickListener(v->editor(n,n.ssid));lower.addView(edit,new LinearLayout.LayoutParams(dp(86),dp(44)));card.addView(lower);
             list.addView(card,new LinearLayout.LayoutParams(-1,-2));gap(list,10);
         }
         NetworkStore.Network n=selection();chosen.setText(n==null?tr("Choisis un réseau pour continuer."):tr("Pour : ")+n.ssid);
-        connect.setEnabled(ready&&catalogValid&&!busy&&!demo&&n!=null);repair.setEnabled(ready&&catalogValid&&!busy&&!demo&&n!=null);add.setEnabled(ready&&catalogValid&&!busy&&!demo);androidKnown.setEnabled(ready&&catalogValid&&!busy&&!demo);refresh.setEnabled(ready&&!busy&&!demo);
+        connect.setText(n!=null&&n.ssid.equals(connectedSsid)?tr("Connecté ✓"):tr("Se connecter"));
+        connect.setEnabled(ready&&catalogValid&&!busy&&!demo&&n!=null&&!n.ssid.equals(connectedSsid));repair.setEnabled(ready&&catalogValid&&!busy&&!demo&&n!=null);add.setEnabled(ready&&catalogValid&&!busy&&!demo);androidKnown.setEnabled(ready&&catalogValid&&!busy&&!demo);refresh.setEnabled(ready&&!busy&&!demo);
         progress.setVisibility(busy?View.VISIBLE:View.INVISIBLE);
     }
     private EditText field(String value,String hint,boolean password){EditText e=new EditText(this);e.setSingleLine(true);e.setTextColor(INK);e.setHintTextColor(MUTED);e.setTextSize(16);e.setHint(hint);e.setInputType(password?InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD:InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);e.setText(value);e.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);return e;}
@@ -195,7 +196,7 @@ public final class MainActivity extends Activity {
             return r;
         },r->{pollUntil=System.currentTimeMillis()+180000;status.setText(reboot?tr("Redémarrage demandé"):tr("Connexion en cours…"));detail.setText(reboot?tr("La reprise sera automatique après le démarrage."):tr("Vérification du réseau sélectionné et de son adresse IP."));handler.postDelayed(poll,3000);});
     }
-    private final Runnable poll=()->{if(foreground&&!busy&&System.currentTimeMillis()<pollUntil)refresh();};
+    private final Runnable poll=new Runnable(){public void run(){if(foreground&&!demo){if(!busy)refresh();else handler.postDelayed(this,3000);}}};
     private void refresh(){runJob(tr("Actualisation…"),this::snapshot,this::apply);}
     private static final class Snapshot{String catalog,known,wifi,status;}
     private Snapshot snapshot() throws Exception {
@@ -205,15 +206,22 @@ public final class MainActivity extends Activity {
     private void apply(Snapshot s){
         try{List<NetworkStore.Network> incoming=NetworkStore.parse(s.catalog);networks.clear();networks.addAll(incoming);known=NetworkStore.known(s.known);wifi=s.wifi;workflow=s.status;ready=true;catalogValid=true;
             if(selection()==null)selected=networks.isEmpty()?"":networks.get(0).ssid;getPreferences(0).edit().putString("selected",selected).apply();
-            String connected="";for(String line:wifi.split("\n"))if(line.startsWith("Wifi is connected to "))connected=line.substring(21).trim();
+            connectedSsid=WifiState.connectedSsid(wifi);
+            String connected=connectedSsid;
             if(workflow.contains("RESUME_PENDING=1")){status.setText(tr("Reprise prévue au redémarrage"));detail.setText(tr("La demande de reconnexion est enregistrée."));}
             else if(workflow.contains("RECONNECTING")){status.setText(tr("Connexion en cours…"));detail.setText(tr("Vérification de l’association et de l’adresse IP."));pollUntil=System.currentTimeMillis()+180000;}
             else if(!connected.isEmpty()){status.setText(tr("Connecté à ")+connected);detail.setText(String.format(tr("Wi-Fi actif · %d réseau(x) dans ta liste"),networks.size()));pollUntil=0;}
             else{status.setText(wifi.contains("Wifi is disabled")?tr("Wi-Fi désactivé"):tr("Aucune connexion Wi-Fi"));detail.setText(workflow.contains("RECONNECT_NOT_CONFIRMED")?tr("Connexion non confirmée. Vérifie le mot de passe et la portée du réseau."):tr("Choisis un réseau ci-dessous pour te connecter."));}
+            if(!selected.equals(connectedSsid) && workflow.contains("RECONNECT_NOT_CONFIRMED")) {
+                if(workflow.contains("NETWORK_NOT_VISIBLE")) detail.setText(tr("Réseau non détecté. Vérifie sa portée et relance la connexion."));
+                else if(workflow.contains("WPA3_UNSUPPORTED")||workflow.contains("SECURITY_UNSUPPORTED")) detail.setText(tr("Sécurité Wi-Fi non prise en charge par ce firmware."));
+                else detail.setText(tr("Connexion au réseau choisi non confirmée. Vérifie le mot de passe et la portée."));
+            }
         }catch(IllegalArgumentException e){status.setText(tr("Fichier Wi-Fi à corriger"));detail.setText(tr(e.getMessage()));ready=true;catalogValid=false;}
-        render();if(foreground&&System.currentTimeMillis()<pollUntil)handler.postDelayed(poll,4000);
+        render();handler.removeCallbacks(poll);if(foreground&&!demo)handler.postDelayed(poll,System.currentTimeMillis()<pollUntil?4000:10000);
     }
     private String explain(String result){
+        if(result.contains("SECURITY_UNKNOWN"))return tr("Sécurité inconnue : ouvre les paramètres Wi-Fi pour détecter ce réseau, puis réessaie. Aucun réseau oublié.");
         if(result.contains("BUSY")||result.contains("ALREADY_PENDING"))return tr("Une opération Wi-Fi est déjà en cours. Attends sa fin puis actualise.");
         if(result.contains("NO_MATCHING"))return tr("Ce réseau n’est pas enregistré dans Android. Utilise d’abord Se connecter.");
         if(result.contains("UNSUPPORTED"))return tr("Ce firmware n’expose pas les commandes Wi-Fi nécessaires.");
