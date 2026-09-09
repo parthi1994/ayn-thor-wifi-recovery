@@ -1,0 +1,84 @@
+<resources>
+<string name="ui_0" formatted="false">"Préparation sur ce Thor…"</string>
+<string name="ui_1" formatted="false">"Accès root AYN indisponible sur cet appareil."</string>
+<string name="ui_2" formatted="false">"Vérification…"</string>
+<string name="ui_3" formatted="false">"Tes réseaux restent sur ton Thor."</string>
+<string name="ui_4" formatted="false">"AYN THOR  /  CONNEXION"</string>
+<string name="ui_5" formatted="false">"OUBLI    ›    REDÉMARRAGE    ›    CONNEXION"</string>
+<string name="ui_6" formatted="false">"OUBLI   ›   REDÉMARRAGE   ›   CONNEXION"</string>
+<string name="ui_7" formatted="false">"Mes réseaux"</string>
+<string name="ui_8" formatted="false">"Actualiser"</string>
+<string name="ui_9" formatted="false">"+ Ajouter"</string>
+<string name="ui_10" formatted="false">"Connus d’Android"</string>
+<string name="ui_11" formatted="false">"Choisis un réseau pour continuer."</string>
+<string name="ui_12" formatted="false">"Se connecter"</string>
+<string name="ui_13" formatted="false">"Oublier, redémarrer et reconnecter"</string>
+<string name="ui_14" formatted="false">"Fichier Wi-Fi et aide"</string>
+<string name="ui_15" formatted="false">"Fichier Wi-Fi et aide  →"</string>
+<string name="ui_16" formatted="false">"Compris"</string>
+<string name="ui_17" formatted="false">"Ajoute ton premier réseau, ou choisis un réseau connu d’Android."</string>
+<string name="ui_18" formatted="false">"Sélectionner "</string>
+<string name="ui_19" formatted="false">"Réseau sélectionné · WPA2"</string>
+<string name="ui_20" formatted="false">"WPA2 · mot de passe enregistré"</string>
+<string name="ui_21" formatted="false">"Modifier"</string>
+<string name="ui_22" formatted="false">"Pour : "</string>
+<string name="ui_23" formatted="false">"Nom du réseau (SSID)"</string>
+<string name="ui_24" formatted="false">"Nom exact du réseau"</string>
+<string name="ui_25" formatted="false">"Mot de passe WPA2"</string>
+<string name="ui_26" formatted="false">"8 à 63 caractères"</string>
+<string name="ui_27" formatted="false">"Afficher le mot de passe"</string>
+<string name="ui_28" formatted="false">"Ajouter un réseau"</string>
+<string name="ui_29" formatted="false">"Modifier le réseau"</string>
+<string name="ui_30" formatted="false">"Enregistrer"</string>
+<string name="ui_31" formatted="false">"Annuler"</string>
+<string name="ui_32" formatted="false">"Supprimer"</string>
+<string name="ui_33" formatted="false">"Retirer ce réseau de la liste ?"</string>
+<string name="ui_34" formatted="false">" sera retiré de l’application et du fichier Wi-Fi. Le réseau enregistré dans Android est conservé."</string>
+<string name="ui_35" formatted="false">"Enregistrement…"</string>
+<string name="ui_36" formatted="false">"Liste enregistrée"</string>
+<string name="ui_37" formatted="false">"Aucun réseau enregistré détecté"</string>
+<string name="ui_38" formatted="false">"Ajoute un réseau avec son SSID et son mot de passe, ou actualise la liste."</string>
+<string name="ui_39" formatted="false">"Réseaux enregistrés dans Android"</string>
+<string name="ui_40" formatted="false">"Fermer"</string>
+<string name="ui_41" formatted="false">"Redémarrer pour ce réseau ?"</string>
+<string name="ui_42" formatted="false">"Le Thor va oublier uniquement « "</string>
+<string name="ui_43" formatted="false">"Oublier et redémarrer"</string>
+<string name="ui_44" formatted="false">"Préparation du redémarrage…"</string>
+<string name="ui_45" formatted="false">"Connexion à "</string>
+<string name="ui_46" formatted="false">"Redémarrage demandé"</string>
+<string name="ui_47" formatted="false">"Connexion en cours…"</string>
+<string name="ui_48" formatted="false">"La reprise sera automatique après le démarrage."</string>
+<string name="ui_49" formatted="false">"Vérification du réseau sélectionné et de son adresse IP."</string>
+<string name="ui_50" formatted="false">"Actualisation…"</string>
+<string name="ui_51" formatted="false">"Reprise prévue au redémarrage"</string>
+<string name="ui_52" formatted="false">"La demande de reconnexion est enregistrée."</string>
+<string name="ui_53" formatted="false">"Vérification de l’association et de l’adresse IP."</string>
+<string name="ui_54" formatted="false">"Connecté à "</string>
+<string name="ui_55" formatted="false">"Wi-Fi actif · %d réseau(x) dans ta liste"</string>
+<string name="ui_56" formatted="false">"Wi-Fi désactivé"</string>
+<string name="ui_57" formatted="false">"Aucune connexion Wi-Fi"</string>
+<string name="ui_58" formatted="false">"Connexion non confirmée. Vérifie le mot de passe et la portée du réseau."</string>
+<string name="ui_59" formatted="false">"Choisis un réseau ci-dessous pour te connecter."</string>
+<string name="ui_60" formatted="false">"Fichier Wi-Fi à corriger"</string>
+<string name="ui_61" formatted="false">"Une opération Wi-Fi est déjà en cours. Attends sa fin puis actualise."</string>
+<string name="ui_62" formatted="false">"Ce réseau n’est pas enregistré dans Android. Utilise d’abord Se connecter."</string>
+<string name="ui_63" formatted="false">"Ce firmware n’expose pas les commandes Wi-Fi nécessaires."</string>
+<string name="ui_64" formatted="false">"Vérifie le SSID et le mot de passe enregistrés."</string>
+<string name="ui_65" formatted="false">"L’oubli du réseau n’a pas été confirmé. Aucun redémarrage demandé."</string>
+<string name="ui_66" formatted="false">"L’opération AYN n’a pas été confirmée. Actualise et vérifie l’accès root sur ce Thor."</string>
+<string name="ui_67" formatted="false">"Action non terminée"</string>
+<string name="ui_68" formatted="false">"Le service root AYN ne répond pas. Rouvre l’application pour réessayer."</string>
+<string name="ui_69" formatted="false">"À quoi sert Thor Wi-Fi ?"</string>
+<string name="ui_70" formatted="false">"Aperçu de démonstration"</string>
+<string name="ui_71" formatted="false">"Réseaux fictifs · Aucune modification du Wi-Fi"</string>
+<string name="ui_72" formatted="false">"Sans PC · Déverrouille le Thor après reboot si demandé."</string>
+<string name="ui_73" formatted="false">"SSID : 1 à 32 octets, sans espace au début ou à la fin ni caractère de contrôle."</string>
+<string name="ui_74" formatted="false">"Mot de passe WPA2 : 8 à 63 caractères ASCII imprimables."</string>
+<string name="ui_75" formatted="false">"Un SSID apparaît plusieurs fois dans le fichier."</string>
+<string name="ui_76" formatted="false">"Format attendu : SSID= puis MOT_DE_PASSE=, sans guillemets ajoutés."</string>
+<string name="ui_77" formatted="false">"Il manque le mot de passe d\'un réseau."</string>
+<string name="ui_78" formatted="false">"Ce SSID existe déjà."</string>
+<string name="ui_79" formatted="false">"Sans PC · La reprise se fait après le redémarrage.\nSi demandé, déverrouille le Thor."</string>
+<string name="ui_80" formatted="false">" », redémarrer, puis s’y reconnecter avec le mot de passe enregistré.\n\nLes autres réseaux Android sont conservés. Déverrouille l’écran après le reboot si demandé."</string>
+<string name="ui_81" formatted="false">"Quand le Wi-Fi du Thor ne retrouve plus les réseaux ou ne se reconnecte plus, cette application automatise un contournement : oublier le réseau choisi, redémarrer, puis se reconnecter sans retaper le mot de passe. Ce n’est pas un correctif du firmware.\n\nConnecter : sans oubli ni reboot. Réparer : uniquement le réseau sélectionné, après confirmation. Ajouter / Modifier / Supprimer : gère la liste de l’application ; supprimer ici conserve le réseau Android.\n\nLa liste est synchronisée avec Téléchargements / Thor-Scripts / WIFI_RESEAUX.txt. Ce fichier contient les mots de passe en clair. Les mots de passe restent masqués dans l’éditeur sauf si tu choisis de les afficher.\n\nWPA2 uniquement. Pour un réseau connu seulement d’Android, saisis son mot de passe une fois. Garde l’application installée et ne force pas son arrêt pour conserver la reprise au boot. Déverrouille après reboot si demandé.\n\nVersion 2.1 · Service root AYN requis. Aucun PC, Shizuku ou Internet requis après installation. L’anglais et le français se choisissent avec FR / EN."</string>
+</resources>

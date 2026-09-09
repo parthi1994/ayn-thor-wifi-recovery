@@ -1,0 +1,15 @@
+*.jks
+*.keystore
+*.idsig
+*.class
+*.dex
+*.log
+__pycache__/
+Build/
+classes/
+dex/
+.interne/
+WIFI_RESEAUX.txt
+credentials
+catalog*.txt
+selection-request.txt
